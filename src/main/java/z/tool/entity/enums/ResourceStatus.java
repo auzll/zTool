@@ -10,7 +10,7 @@ import z.tool.entity.interfaces.IEnumName;
  */
 public enum ResourceStatus implements IEnumName {
     /** 启用 */
-    EnAble("启用"), 
+    Enable("启用"), 
     
     /** 禁用 */
     Disable("禁用");
