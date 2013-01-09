@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import z.tool.entity.interfaces.IKey;
@@ -18,7 +19,7 @@ import z.tool.entity.interfaces.IKey;
  */
 public final class ZUtils {
     @SuppressWarnings("unchecked")
-    public static <K,V extends IKey<K>> Map<K, V> toMap(List<? extends IKey<K>> list) {
+    public static <K,V extends IKey<K>> Map<K, V> makeIKeyDataAsMap(List<? extends IKey<K>> list) {
         if (isEmpty(list)) {
             return Collections.emptyMap();
         }
@@ -29,6 +30,19 @@ public final class ZUtils {
         }
         
         return map;
+    }
+    
+    public static <K> List<K> extractIKeyAsList(List<? extends IKey<K>> list) {
+        if (isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        
+        List<K> newList = Lists.newArrayList();
+        for (IKey<K> key : list) {
+            newList.add(key.getKey());
+        }
+        
+        return newList;
     }
     
     public static boolean isEmpty(Collection<?> collection) {
