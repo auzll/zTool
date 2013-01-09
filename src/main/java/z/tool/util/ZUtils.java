@@ -4,13 +4,33 @@
 package z.tool.util;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
+
+import z.tool.entity.interfaces.IKey;
 
 
 /**
  * @author auzll@163.com
  */
 public final class ZUtils {
+    @SuppressWarnings("unchecked")
+    public static <K,V extends IKey<K>> Map<K, V> toMap(List<? extends IKey<K>> list) {
+        if (isEmpty(list)) {
+            return Collections.emptyMap();
+        }
+        
+        Map<K, V> map = Maps.newHashMap();
+        for (IKey<K> key : list) {
+            map.put(key.getKey(), (V)key);
+        }
+        
+        return map;
+    }
+    
     public static boolean isEmpty(Collection<?> collection) {
         return null == collection || 0 == collection.size();
     }
