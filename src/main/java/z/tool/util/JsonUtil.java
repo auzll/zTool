@@ -28,7 +28,7 @@ public final class JsonUtil {
     
     private JsonUtil() {}
     
-    public static String makeObjectResult(boolean success, IJson item) {
+    public static String makeObjectResult(boolean success, IJson<?> item) {
         return makeObjectResult(success, item.toJson());
     }
     
@@ -48,14 +48,14 @@ public final class JsonUtil {
         return jsonObj.toString();
     }
     
-    public static String makeArrayResult(int totalCount, List<? extends IJson> array) {
+    public static String makeArrayResult(int totalCount, List<? extends IJson<?>> array) {
         JSONObject jsonObj = new JSONObject();
         jsonObj.element("success", true);
         jsonObj.element("totalCount", totalCount);
         
         if (null != array && array.size() > 0) {
             List<JSONObject> wrappedList = Lists.newArrayList();
-            for (IJson j : array) {
+            for (IJson<?> j : array) {
                 wrappedList.add(j.toJson());
             }
             jsonObj.element("items", wrappedList);
@@ -187,7 +187,7 @@ public final class JsonUtil {
         return jsonObject;
     }
     
-    public static JSONObject addObjectIntoJsonObject(JSONObject jsonObject, String key, IJson iJson) {
+    public static JSONObject addObjectIntoJsonObject(JSONObject jsonObject, String key, IJson<?> iJson) {
         if (null != key && null != iJson) {
             return addObjectIntoJsonObject(jsonObject, key, iJson.toJson());
         }
@@ -201,14 +201,118 @@ public final class JsonUtil {
         return jsonObject;
     }
     
-    public static JSONObject addIntoJsonObject(JSONObject jsonObject, String key, List<? extends IJson> values) {
+    public static JSONObject addIntoJsonObject(JSONObject jsonObject, String key, List<? extends IJson<?>> values) {
         if (null != key && null != values && values.size() > 0) {
             JSONArray array = new JSONArray();
-            for (IJson json : values) {
+            for (IJson<?> json : values) {
                 array.add(json.toJson());
             }
             jsonObject.element(key, array);
         }
         return jsonObject;
+    }
+    
+    public static String getString(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        return jsonObject.getString(key);
+    }
+    
+    public static boolean getBoolean(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return false;
+        }
+        return jsonObject.getBoolean(key);
+    }
+    
+    public static double getDouble(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return 0;
+        }
+        return jsonObject.getDouble(key);
+    }
+    
+    public static int getInt(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return 0;
+        }
+        return jsonObject.getInt(key);
+    }
+    
+    public static long getLong(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return 0;
+        }
+        return jsonObject.getLong(key);
+    }
+    
+    public static Date getLongAsDate(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        return new Date(jsonObject.getLong(key));
+    }
+    
+    public static JSONObject getJSONObject(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        return jsonObject.getJSONObject(key);
+    }
+    
+    public static JSONArray getJSONArray(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        return jsonObject.getJSONArray(key);
+    }
+    
+    public static List<JSONObject> getJSONObjectList(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        
+        List<JSONObject> list = Lists.newArrayList();
+        
+        Object unknowObject = jsonObject.get(key);
+        if (unknowObject instanceof JSONArray) {
+            JSONArray array = JSONArray.class.cast(unknowObject);
+            for (int i = 0, max = array.size(); i < max; i++) {
+                list.add(array.getJSONObject(i));
+            }
+        } else if (unknowObject instanceof JSONObject) {
+            list.add(JSONObject.class.cast(unknowObject));
+        }
+        
+        return list;
+    }
+    
+    public static List<String> getStringList(JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        
+        List<String> list = Lists.newArrayList();
+        
+        Object unknowObject = jsonObject.get(key);
+        if (unknowObject instanceof JSONArray) {
+            JSONArray array = JSONArray.class.cast(unknowObject);
+            for (int i = 0, max = array.size(); i < max; i++) {
+                list.add(array.getString(i));
+            }
+        } else if (unknowObject instanceof String) {
+            list.add(String.class.cast(unknowObject));
+        }
+        
+        return list;
+    }
+    
+    public static <T extends Enum<T>> T getEnum(Class<T> enumType, JSONObject jsonObject, String key) {
+        if (!jsonObject.containsKey(key)) {
+            return null;
+        }
+        
+        return EnumUtil.of(enumType, jsonObject.getString(key));
     }
 }
