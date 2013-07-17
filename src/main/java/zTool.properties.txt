@@ -1,0 +1,1 @@
+json.factory.impl=z.tool.entity.json.JsonFactoryInterface
