@@ -8,8 +8,7 @@ import javax.servlet.ServletContextListener;
 
 import ognl.OgnlRuntime;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import z.tool.util.LogUtil;
 
@@ -17,7 +16,7 @@ import z.tool.util.LogUtil;
  * @author auzll
  */
 public final class OgnlRuntimeDisableListener implements ServletContextListener {
-    private static final Log LOG = LogFactory.getLog(OgnlRuntimeDisableListener.class);
+    private static final Logger LOG = Logger.getLogger(OgnlRuntimeDisableListener.class);
     
     public static final String OGNL_RUNTIME_DISABLE_KEY = "ognlRuntimeDisableClasses";
 

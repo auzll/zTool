@@ -6,13 +6,19 @@ package z.tool.util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
+import z.tool.checker.Checker;
 import z.tool.entity.interfaces.IKey;
+import z.tool.entity.interfaces.IParent;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * @author auzll
@@ -71,5 +77,79 @@ public final class CollectionUtil {
         }
         
         return target;
+    }
+    
+    public static <E>List<E> convertTreeList(List<? extends IParent<E>> sourceList) {
+        if (ZUtils.isEmpty(sourceList)) {
+            return Collections.emptyList();
+        }
+        
+        List<E> treeList = Lists.newArrayList();
+        
+        // tree map
+        Map<Long, IParent<E>> tMap = Maps.newTreeMap();
+        for (IParent<E> a : sourceList) {
+            tMap.put(a.getId(), a);
+        }
+        
+        for (IParent<E> r : tMap.values()) {
+            @SuppressWarnings("unchecked")
+            E e = (E) r; 
+            if (r.getParentId() > 0) {
+                tMap.get(r.getParentId()).addChild(e);
+            } else {
+                treeList.add(e);
+            }
+        }
+        
+        return treeList;
+    }
+    
+    public static <E>void checkDeadLock(List<? extends IParent<E>> sourceList, IParent<E> tobeCheck) {
+        if (tobeCheck.getParentId() < 1 || tobeCheck.getId() < 1) {
+            // 未设置，不用检查
+            return;
+        }
+        
+        Checker.checkLogic(tobeCheck.getId() != tobeCheck.getParentId(), 
+                "归属关系设置有误(父子节点相同)");
+        
+        Map<Long, IParent<E>> tMap = Maps.newTreeMap();
+        for (IParent<E> a : sourceList) {
+            tMap.put(a.getId(), a);
+        }
+        
+        IParent<E> me = tMap.get(tobeCheck.getId());
+        Checker.checkLogic(null != me, 
+            "归属关系设置有误(当前节点不存在)");
+        
+        for (IParent<E> r : tMap.values()) {
+            @SuppressWarnings("unchecked")
+            E e = (E) r; 
+            if (r.getParentId() > 0) {
+                tMap.get(r.getParentId()).addChild(e);
+            }
+        }
+        
+        if (ZUtils.isEmpty(me.getChildren())) {
+            // 没有子节点，不用检查
+            return;
+        }
+        
+        Set<Long> allSubIds = Sets.newHashSet();
+        Queue<IParent<E>> queue = new LinkedList<IParent<E>>();
+        queue.add(me);
+        do {
+            IParent<E> elem = queue.poll();
+            if (!ZUtils.isEmpty(elem.getChildren())) {
+                queue.addAll(elem.getChildren());
+                for (IParent<E> e : elem.getChildren()) {
+                    allSubIds.add(e.getId());
+                }
+            }
+        } while (!queue.isEmpty());
+        
+        Checker.checkLogic(!allSubIds.contains(tobeCheck.getParentId()), 
+                "归属关系设置有误(有死循环)");
     }
 }

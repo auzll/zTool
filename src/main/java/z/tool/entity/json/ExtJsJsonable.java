@@ -3,16 +3,15 @@
  * 
  * since 2012-12-26 上午07:37:54
  */
-package z.tool.entity.interfaces;
+package z.tool.entity.json;
 
-import net.sf.json.JSONObject;
 
 /**
  * @author auzll
  */
-public interface IExtJsTreeJson {
+public interface ExtJsJsonable {
     /**
      * @return 返回Extjs的TreeStore专用的JSONObject
      */
-    JSONObject toExtjsTreeJson();
+    JsonObject toExtjsTreeJson();
 }

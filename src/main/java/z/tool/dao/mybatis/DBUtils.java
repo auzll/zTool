@@ -10,12 +10,11 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.io.Resources;
+import org.apache.log4j.Logger;
 
 public final class DBUtils {
-    private static final Log LOG = LogFactory.getLog(DBUtils.class);
+    private static final Logger LOG = Logger.getLogger(DBUtils.class);
     
     public static class DataSourceHolder {
         public static final DataSource DATA_SOURCE = newDataSource();

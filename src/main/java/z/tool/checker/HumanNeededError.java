@@ -16,4 +16,8 @@ public final class HumanNeededError extends AbsError {
     public HumanNeededError(String format, Object... args) {
         super(String.format(format, args));
     }
+    
+    @Override public HumanNeededError attach(Object key, Object value) {
+        return (HumanNeededError) super.attach(key, value);
+    }
 }

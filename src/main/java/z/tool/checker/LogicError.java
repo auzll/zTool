@@ -18,4 +18,8 @@ public final class LogicError extends AbsError {
     public LogicError(String format, Object... args) {
         super(String.format(format, args));
     }
+    
+    @Override public LogicError attach(Object key, Object value) {
+        return (LogicError) super.attach(key, value);
+    }
 }

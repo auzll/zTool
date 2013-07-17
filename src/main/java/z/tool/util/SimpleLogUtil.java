@@ -5,7 +5,7 @@ package z.tool.util;
 
 import java.util.Date;
 
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 public final class SimpleLogUtil {
     private SimpleLogUtil() {}

@@ -5,15 +5,14 @@ package z.tool.util;
 
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.FileWatchdog;
 
 /**
  * @author auzll@163.com
  */
 public final class PropertiesWatchDog {
-    private static final Log LOG = LogFactory.getLog(PropertiesWatchDog.class);
+    private static final Logger LOG = Logger.getLogger(PropertiesWatchDog.class);
 
     private Properties properties;
     private FileWatchdog watchdog;

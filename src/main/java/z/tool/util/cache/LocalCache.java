@@ -10,8 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 
 
@@ -19,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * 本地缓存。内部用ConcurrentHashMap来实现。
  */
 public final class LocalCache implements ICache, Runnable {
-    private static final Log LOG = LogFactory.getLog(LocalCache.class);
+    private static final Logger LOG = Logger.getLogger(LocalCache.class);
 
     /** 处理超时缓存的时间间隔，默认是3600秒，即1小时 */
     public static final long DEFAULT_CHECK_INTERVAL = 60 * 60;
