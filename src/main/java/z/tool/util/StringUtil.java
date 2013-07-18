@@ -237,5 +237,14 @@ public final class StringUtil {
         return null != src ? src.toUpperCase() : null;
     }
     
+    public static final int stringToInt(String src) {
+        src = StringUtil.trimAndTryReturnNull(src);
+        try {
+            return null != src ? Integer.valueOf(src) : 0;
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+    
     private StringUtil() {}
 }

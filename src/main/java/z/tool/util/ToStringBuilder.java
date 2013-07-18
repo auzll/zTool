@@ -24,7 +24,7 @@ public final class ToStringBuilder implements Builder<String> {
         return format;
     }
     
-    private StringBuilder getAndTryInitBuff() {
+    public StringBuilder getOrTryInitBuff() {
         if (null == buff) {
             buff = new StringBuilder();
         }
@@ -33,14 +33,14 @@ public final class ToStringBuilder implements Builder<String> {
     
     public ToStringBuilder add(String key, Object value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, String value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
@@ -54,119 +54,119 @@ public final class ToStringBuilder implements Builder<String> {
     
     public ToStringBuilder add(String key, Long value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.longValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.longValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Integer value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.intValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.intValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Short value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.shortValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.shortValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Byte value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.byteValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.byteValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Double value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.doubleValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.doubleValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Float value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.floatValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.floatValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Boolean value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.booleanValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.booleanValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, Character value) {
         if (null != key && null != value) {
-            getAndTryInitBuff().append(key).append(":").append(value.charValue()).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value.charValue()).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder addId(String key, long value) {
         if (null != key && value > 0) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, long value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, int value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, short value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, byte value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, double value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, float value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, boolean value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
     
     public ToStringBuilder add(String key, char value) {
         if (null != key) {
-            getAndTryInitBuff().append(key).append(":").append(value).append(SEP);
+            getOrTryInitBuff().append(key).append(":").append(value).append(SEP);
         }
         return this;
     }
