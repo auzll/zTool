@@ -16,10 +16,11 @@ public final class Context {
     private final HttpServletResponse response;
     private final String contextRealPath;
     
+    private StringBuilder logBuff;
+    
     private Context(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
-        //this.contextRealPath = request.getServletContext().getRealPath("/");
         this.contextRealPath = request.getSession().getServletContext().getRealPath("/");
     }
 
@@ -53,6 +54,17 @@ public final class Context {
 
     public String getContextRealPath() {
         return contextRealPath;
+    }
+
+    public StringBuilder getOrNewLogBuff() {
+        if (null == logBuff) {
+            logBuff = new StringBuilder();
+        }
+        return logBuff;
+    }
+
+    public StringBuilder getLogBuff() {
+        return logBuff;
     }
     
     

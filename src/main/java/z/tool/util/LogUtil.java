@@ -4,6 +4,7 @@
 package z.tool.util;
 
 import java.util.Arrays;
+import java.util.Date;
 
 
 /**
@@ -59,12 +60,32 @@ public final class LogUtil {
         return checkBuff(logBuff).append(key).append(":").append(value).append(",");
     }
     
+    public static StringBuilder appendLog(StringBuilder logBuff, String key, Date value) {
+        return checkBuff(logBuff).append(key).append(":").append(null != value ? value.getTime() : 0).append(",");
+    }
+    
+    public static StringBuilder appendCurrentThreadId(StringBuilder logBuff) {
+        return checkBuff(logBuff).append("threadId").append(":").append(Thread.currentThread().getId()).append(",");
+    }
+    
+    public static StringBuilder appendClassSimpleName(StringBuilder logBuff, String key, Class<?> clazz) {
+        return checkBuff(logBuff).append(key).append(":").append(null != clazz ? clazz.getSimpleName() : null).append(",");
+    }
+    
     public static StringBuilder appendLogArrayBegin(StringBuilder logBuff, String key) {
         return checkBuff(logBuff).append(key).append(":[");
     }
     
     public static StringBuilder appendLogArrayFinish(StringBuilder logBuff) {
         return StringUtil.deleteEnd(checkBuff(logBuff), ',').append("]").append(",");
+    }
+    
+    public static StringBuilder appendLogObjectBegin(StringBuilder logBuff, String key) {
+        return checkBuff(logBuff).append(key).append(":{");
+    }
+    
+    public static StringBuilder appendLogObjectFinish(StringBuilder logBuff) {
+        return StringUtil.deleteEnd(checkBuff(logBuff), ',').append("}").append(",");
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String keyA, Object valueA, String keyB, Object valueB) {
