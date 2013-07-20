@@ -1,7 +1,7 @@
 /**
  * Code by auzll (http://auzll.iteye.com)
  */
-package z.tool.entity.exceptions;
+package z.tool.checker;
 
 import javax.servlet.ServletException;
 

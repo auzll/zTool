@@ -6,7 +6,7 @@ package z.tool.checker;
 /**
  * 需要报警，人为跟进的错误
  */
-public final class HumanNeededError extends AbsError {
+public class HumanNeededError extends AbsError {
     private static final long serialVersionUID = 5924133530290728918L;
 
     public HumanNeededError(String message) {
