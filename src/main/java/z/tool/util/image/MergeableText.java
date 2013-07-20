@@ -13,14 +13,14 @@ import java.io.IOException;
  * @author auzll
  * @since 2013-7-20 上午11:41:39
  */
-public final class DrawableText implements Drawable {
+public final class MergeableText implements Mergeable {
     private String text;
     private Font font;
     private Color color;
     private int x;
     private int y;
 
-    private DrawableText(String text, Font font, Color color, int x, int y) {
+    private MergeableText(String text, Font font, Color color, int x, int y) {
         this.text = text;
         this.font = font;
         this.color = color;
@@ -41,8 +41,8 @@ public final class DrawableText implements Drawable {
         graphics.drawString(text, x, y);
     }
 
-    public static DrawableText of(String text, Font font, Color color, int x,
+    public static MergeableText of(String text, Font font, Color color, int x,
             int y) {
-        return new DrawableText(text, font, color, x, y);
+        return new MergeableText(text, font, color, x, y);
     }
 }

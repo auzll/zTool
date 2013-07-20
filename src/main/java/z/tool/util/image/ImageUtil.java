@@ -27,16 +27,16 @@ public final class ImageUtil {
     private static final Logger LOG = Logger.getLogger(ImageUtil.class);
     
     /**
-     * 合并图像
+     * 合并图像(被合并的资源可以是图片或文字)
      */
-    public static void mergeResource(File srcImageFile, ImageType destType, File destImageFile, Drawable drawable, Drawable... drawables) {
-        mergeResource(srcImageFile, destType, destImageFile, 0, 0, drawable, drawables);
+    public static void mergeResource(File srcImageFile, ImageType destType, File destImageFile, Mergeable mergeable, Mergeable... mergeables) {
+        mergeResource(srcImageFile, destType, destImageFile, 0, 0, mergeable, mergeables);
     }
     
     /**
-     * 合并图像
+     * 合并图像(被合并的资源可以是图片或文字)
      */
-    public static void mergeResource(File srcImageFile, ImageType destType, File destImageFile, int newHeight, int newWidth, Drawable drawable, Drawable... drawables) {
+    public static void mergeResource(File srcImageFile, ImageType destType, File destImageFile, int newHeight, int newWidth, Mergeable mergeable, Mergeable... mergeables) {
         if (null == srcImageFile || !srcImageFile.exists()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("method:resize,srcImageFile:" 
@@ -73,11 +73,11 @@ public final class ImageUtil {
             distImage.getGraphics().drawImage(srcImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH), 0, 0, null);
             
             // 绘制待合并的资源(可以是图片或文字)
-            drawable.draw(distImage);
+            mergeable.draw(distImage);
             
             // 绘制待合并的资源(可以是图片或文字)
-            if (null != drawables && drawables.length > 0) {
-                for (Drawable d : drawables) {
+            if (null != mergeables && mergeables.length > 0) {
+                for (Mergeable d : mergeables) {
                     d.draw(distImage);
                 }
             }
