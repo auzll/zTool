@@ -14,6 +14,8 @@ public enum Error implements ErrorTip {
     TOO_MANY_USER("too many user"),
     
     SYSTEM_BUSY("system busy, please try again later"),
+    
+    IO_ERROR("io busy, please try again later"),
     ;
     
     private final String enTip;

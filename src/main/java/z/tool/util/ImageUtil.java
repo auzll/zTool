@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import z.tool.checker.HumanNeededError;
 import z.tool.checker.LogicError;
+import z.tool.entity.enums.Error;
 
 /**
  * 图片工具类
@@ -127,7 +128,7 @@ public final class ImageUtil {
                     + ",maxNewHeight:"  + maxNewHeight
                     + ",maxNewWidth:"  + maxNewWidth
                     + ",errorMsg:" + e.getMessage(), e);
-            throw new HumanNeededError("图片缩放失败");
+            throw new HumanNeededError(Error.IO_ERROR);
         }
     }
 }

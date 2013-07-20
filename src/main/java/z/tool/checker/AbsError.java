@@ -5,6 +5,8 @@ package z.tool.checker;
 
 import java.util.Map;
 
+import z.tool.entity.interfaces.ErrorTip;
+
 import com.google.common.collect.Maps;
 
 class AbsError extends RuntimeException {
@@ -13,6 +15,8 @@ class AbsError extends RuntimeException {
     private static final long serialVersionUID = 1384838746221312014L;
     
     private Map<Object, Object> attachMap;
+    
+    private ErrorTip errorTip;
     
     private Map<Object, Object> newOrGetAttachMap() {
         if (null == attachMap) {
@@ -42,4 +46,14 @@ class AbsError extends RuntimeException {
     AbsError(String message) {
         super(message);
     }
+
+    public ErrorTip getErrorTip() {
+        return errorTip;
+    }
+
+    protected final void setErrorTip(ErrorTip errorTip) {
+        this.errorTip = errorTip;
+    }
+    
+    
 }
