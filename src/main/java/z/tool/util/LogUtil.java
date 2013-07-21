@@ -88,6 +88,14 @@ public final class LogUtil {
         return StringUtil.deleteEnd(checkBuff(logBuff), ',').append("}").append(",");
     }
     
+    public static StringBuilder appendLogClassSimpleNameBegin(StringBuilder logBuff, Class<?> clazz) {
+        return checkBuff(logBuff).append(null != clazz ? clazz.getSimpleName() : null).append(":{");
+    }
+    
+    public static StringBuilder appendLogClassSimpleNameFinish(StringBuilder logBuff) {
+        return StringUtil.deleteEnd(checkBuff(logBuff), ',').append("}").append(",");
+    }
+    
     public static StringBuilder appendLog(StringBuilder logBuff, String keyA, Object valueA, String keyB, Object valueB) {
         return checkBuff(logBuff).append("{").append(keyA).append(":")
                 .append(valueA).append(",").append(keyB).append(":")
