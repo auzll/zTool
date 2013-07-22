@@ -35,13 +35,19 @@ public final class FileUtil {
             fis = new FileInputStream(src);
             fos = new FileOutputStream(dest);
             
-            FileChannel channel = fis.getChannel();
-            channel.transferTo(0, channel.size(), fos.getChannel());
+            copy(fis, fos);
             
         } finally {
             IOUtils.closeQuietly(fis);
             IOUtils.closeQuietly(fos);
         }
-        
+    }
+    
+    /**
+     * 复制文件
+     */
+    public static void copy(FileInputStream fis, FileOutputStream fos) throws IOException {
+        FileChannel channel = fis.getChannel();
+        channel.transferTo(0, channel.size(), fos.getChannel());
     }
 }

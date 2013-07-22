@@ -178,5 +178,12 @@ public final class ToStringBuilder implements Builder<String> {
         }
         return null;
     }
+    
+    public String plain() {
+        if (null != buff) {
+            return buff.deleteCharAt(buff.length() - 1).toString();
+        }
+        return null;
+    }
 
 }

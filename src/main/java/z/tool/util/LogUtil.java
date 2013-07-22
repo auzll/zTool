@@ -49,18 +49,30 @@ public final class LogUtil {
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String key, StringBuilder value) {
+        if (null == value) {
+            return logBuff;
+        }
         return checkBuff(logBuff).append(key).append(":").append(value).append(",");
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String key, String value) {
+        if (null == value) {
+            return logBuff;
+        }
         return checkBuff(logBuff).append(key).append(":").append(value).append(",");
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String key, Object value) {
+        if (null == value) {
+            return logBuff;
+        }
         return checkBuff(logBuff).append(key).append(":").append(value).append(",");
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String key, Date value) {
+        if (null == value) {
+            return logBuff;
+        }
         return checkBuff(logBuff).append(key).append(":").append(null != value ? value.getTime() : 0).append(",");
     }
     
@@ -68,8 +80,11 @@ public final class LogUtil {
         return checkBuff(logBuff).append("threadId").append(":").append(Thread.currentThread().getId()).append(",");
     }
     
-    public static StringBuilder appendClassSimpleName(StringBuilder logBuff, String key, Class<?> clazz) {
-        return checkBuff(logBuff).append(key).append(":").append(null != clazz ? clazz.getSimpleName() : null).append(",");
+    public static StringBuilder appendClassSimpleName(StringBuilder logBuff, String key, Class<?> value) {
+        if (null == value) {
+            return logBuff;
+        }
+        return checkBuff(logBuff).append(key).append(":").append(null != value ? value.getSimpleName() : null).append(",");
     }
     
     public static StringBuilder appendLogArrayBegin(StringBuilder logBuff, String key) {
@@ -103,6 +118,9 @@ public final class LogUtil {
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String key, Object[] value) {
+        if (null == value || 0 == value.length) {
+            return logBuff;
+        }
         return checkBuff(logBuff).append(key).append(":").append(Arrays.toString(value)).append(",");
     }
     
@@ -110,7 +128,17 @@ public final class LogUtil {
         return checkBuff(logBuff).append(key).append(":").append(value).append(",");
     }
     
+    public static StringBuilder appendIdLog(StringBuilder logBuff, String key, int value) {
+        if (value < 1) {
+            return logBuff;
+        }
+        return checkBuff(logBuff).append(key).append(":").append(value).append(",");
+    }
+    
     public static StringBuilder appendLog(StringBuilder logBuff, String key, int[] values) {
+        if (null == values || 0 == values.length) {
+            return logBuff;
+        }
         logBuff = checkBuff(logBuff).append(key).append(":[");
         for (int i = 0; i < values.length; i++) {
             logBuff.append(values[i]).append(',');
@@ -118,6 +146,13 @@ public final class LogUtil {
         StringUtil.deleteEnd(logBuff, ',');
         logBuff.append("],");
         return logBuff;
+    }
+    
+    public static StringBuilder appendIdLog(StringBuilder logBuff, String key, long value) {
+        if (value < 1) {
+            return logBuff;
+        }
+        return checkBuff(logBuff).append(key).append(":").append(value).append(",");
     }
     
     public static StringBuilder appendLog(StringBuilder logBuff, String key, long value) {

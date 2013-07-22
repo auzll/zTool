@@ -3,23 +3,30 @@
  */
 package z.tool.web.servlet;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import z.tool.checker.ServletError;
 import z.tool.entity.enums.Error;
 import z.tool.entity.json.JsonObject;
 import z.tool.entity.json.Jsons;
+import z.tool.util.LogUtil;
 import z.tool.util.ServletUtil;
 import z.tool.util.StringUtil;
 import z.tool.util.ToStringBuilder;
+import z.tool.web.Context;
 
 
 /**
@@ -35,6 +42,8 @@ public abstract class AbstractServlet extends HttpServlet {
     private static final long serialVersionUID = -6467306905009045762L;
     
     private static final int DEFAULT_MAX_CONCURRENT = 100;
+    
+    private ReentrantLock lock = new ReentrantLock();
     
     /** 最大并发量 */
     private int maxConcurrent = DEFAULT_MAX_CONCURRENT;
@@ -116,48 +125,94 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
+    protected Part getPart(HttpServletRequest request, String key) throws ServletError {
+        try {
+            return request.getPart(key);
+        } catch (Exception e) {
+            throw new ServletError(e);
+        }
+    }
+    
+    protected File getPartFile(HttpServletRequest request, String key) throws ServletError {
+        Part part = getPart(request, key);
+        if (null == part) {
+            return null;
+        }
+        
+        FileOutputStream fos = null;
+        try {
+            File tmp = File.createTempFile("servlet_part", "tmp");
+            fos = new FileOutputStream(tmp);
+            IOUtils.copy(part.getInputStream(), fos);
+            return tmp;
+        } catch (IOException e) {
+            throw new ServletError(e);
+        } finally {
+            IOUtils.closeQuietly(fos);
+        }
+    }
+    
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Context context = Context.get();
+        StringBuilder logBuff = null != context ? context.getLogBuff() : new StringBuilder();
         
-        ToStringBuilder logBuilder = null;
-        
-        if (requestCount > maxConcurrent) {
-            logBuilder = new ToStringBuilder()
-                .add("method", "service")
-                .add("clazz", getRealClassName())
-                .add("httpMethod", request.getMethod())
-                .add("requestURI", request.getRequestURI());
-            
-            if (null != request.getQueryString()) {
-                logBuilder.getOrTryInitBuff()
-                    .append("queryString")
-                    .append(":{")
-                    .append(request.getQueryString())
-                    .append("},");
-            }
-            
-            logBuilder.add("threadId", Thread.currentThread().getId())
-                .addId("userId", getModelUserId(request))
-                .add("descr", "overload")
-                ;
-            LOG.error(logBuilder.build());
-            
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, 
-                    Error.TOO_MANY_USER.tip());
-            return;
-        }
-        
-        long start = 0;
+        final long start = System.currentTimeMillis();
+        boolean gotError = false;
         try {
-            if (LOG_DEBUG) {
-                start = System.currentTimeMillis();
+            LogUtil.appendLogClassSimpleNameBegin(logBuff, AbstractServlet.class);
+            LogUtil.appendCurrentThreadId(logBuff);
+            
+            LogUtil.appendLog(logBuff, "clazz", getRealClassName());
+            LogUtil.appendLog(logBuff, "httpMethod", request.getMethod());
+            LogUtil.appendLog(logBuff, "requestURI", request.getRequestURI());
+            LogUtil.appendLog(logBuff, "queryString", request.getQueryString());
+            
+            LogUtil.appendIdLog(logBuff, "userId", getModelUserId(request));
+            
+            if (requestCount > maxConcurrent) {
+                gotError = true;
+                LogUtil.appendLog(logBuff, "descr", "overload");
+                if (LOG_DEBUG) {
+                    LogUtil.appendLog(logBuff, "overloadDiff", (System.currentTimeMillis() - start));
+                }
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, 
+                        Error.TOO_MANY_USER.tip());
+                return;
             }
-            requestCount++;
+            
+            int requestIndex;
+            try {
+                lock.lock();
+                requestIndex = requestCount++;
+                
+                if (requestIndex > maxConcurrent) {
+                    gotError = true;
+                    LogUtil.appendLog(logBuff, "descr", "overload in lock");
+                    if (LOG_DEBUG) {
+                        LogUtil.appendLog(logBuff, "overloadDiff", (System.currentTimeMillis() - start));
+                    }
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, 
+                            Error.TOO_MANY_USER.tip());
+                    return;
+                }
+                
+            } finally {
+                lock.unlock();
+            }
             
             super.service(request, response);
             
+            if (LOG_DEBUG) {
+                LogUtil.appendLog(logBuff, "requestIndex", requestIndex);
+                LogUtil.appendLog(logBuff, "serviceDiff", (System.currentTimeMillis() - start));
+            }
+            
         } catch (ServletError e) {
+            if (LOG_DEBUG) {
+                LogUtil.appendLog(logBuff, "errorDiff", (System.currentTimeMillis() - start));
+            }
             String requestType = request.getHeader("X-Requested-With");  
             if (null != requestType && "XMLHttpRequest".equalsIgnoreCase(requestType)) {
                 JsonObject data = Jsons.newJsonObject();
@@ -169,33 +224,17 @@ public abstract class AbstractServlet extends HttpServlet {
                 throw e;
             }
         } finally {
-            requestCount--;
-            
-            if (LOG_DEBUG) {
-                long end = System.currentTimeMillis();
-                logBuilder = new ToStringBuilder()
-                    .add("method", "service")
-                    .add("clazz", getRealClassName())
-                    .add("httpMethod", request.getMethod())
-                    .add("requestURI", request.getRequestURI());
-                
-                if (null != request.getQueryString()) {
-                    logBuilder.getOrTryInitBuff()
-                        .append("queryString")
-                        .append(":{")
-                        .append(request.getQueryString())
-                        .append("},");
-                }
-                
-                logBuilder.add("threadId", Thread.currentThread().getId())
-                    .addId("userId", getModelUserId(request))
-                    .add("requestCount", requestCount)
-                    .add("start", start)
-                    .add("end", end)
-                    .add("diffTime", (end- start));
-                LOG.debug(logBuilder.build());
+            LogUtil.appendLogClassSimpleNameFinish(logBuff);
+            if (gotError) {
+                LOG.error(LogUtil.finishLog(logBuff));
+            } else if (LOG_INFO) {
+                LOG.info(LogUtil.finishLog(logBuff));
             }
+            
+            requestCount--;
         }
+        
+        
     }
     
     @Override public void init(ServletConfig config) throws ServletException {
@@ -211,7 +250,7 @@ public abstract class AbstractServlet extends HttpServlet {
             LOG.info(new ToStringBuilder()
                 .add("method", "init")
                 .add("clazz", getRealClassName())
-                .add("maxConcurrent", this.maxConcurrent).build());
+                .add("maxConcurrent", this.maxConcurrent).plain());
         }
     }
     
@@ -222,7 +261,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "post")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }
@@ -238,7 +277,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "get")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }
@@ -254,7 +293,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "delete")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }
@@ -270,7 +309,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "head")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }
@@ -286,7 +325,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "options")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }
@@ -302,7 +341,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "put")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }
@@ -318,7 +357,7 @@ public abstract class AbstractServlet extends HttpServlet {
         } catch (Exception e) {
             LOG.error(new ToStringBuilder()
                 .add("method", "trace")
-                .add("errorMsg", e.getMessage()).build(), e);
+                .add("errorMsg", e.getMessage()).plain(), e);
             throw new ServletError(Error.SYSTEM_BUSY);
         }
     }

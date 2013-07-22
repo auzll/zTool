@@ -56,16 +56,14 @@ public final class Context {
         return contextRealPath;
     }
 
-    public StringBuilder getOrNewLogBuff() {
+    public StringBuilder getLogBuff() {
         if (null == logBuff) {
             logBuff = new StringBuilder();
         }
         return logBuff;
     }
-
-    public StringBuilder getLogBuff() {
+    
+    public StringBuilder getDirectLogBuff() {
         return logBuff;
     }
-    
-    
 }
