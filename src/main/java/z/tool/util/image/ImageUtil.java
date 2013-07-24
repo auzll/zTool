@@ -3,7 +3,9 @@
  */
 package z.tool.util.image;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,14 +32,14 @@ public final class ImageUtil {
     /**
      * 合并图像(被合并的资源可以是图片或文字)
      */
-    public static void mergeResource(File srcImageFile, ImageType destType, File destImageFile, Mergeable mergeable, Mergeable... mergeables) {
-        mergeResource(srcImageFile, destType, destImageFile, 0, 0, mergeable, mergeables);
+    public static void mergeResource(int bufferedImageType, File srcImageFile, ImageType destType, File destImageFile, Mergeable mergeable, Mergeable... mergeables) {
+        mergeResource(bufferedImageType, srcImageFile, destType, destImageFile, 0, 0, mergeable, mergeables);
     }
     
     /**
      * 合并图像(被合并的资源可以是图片或文字)
      */
-    public static void mergeResource(File srcImageFile, ImageType destType, File destImageFile, int newWidth, int newHeight, Mergeable mergeable, Mergeable... mergeables) {
+    public static void mergeResource(int bufferedImageType, File srcImageFile, ImageType destType, File destImageFile, int newWidth, int newHeight, Mergeable mergeable, Mergeable... mergeables) {
         if (null == srcImageFile || !srcImageFile.exists()) {
             throw new IllegalArgumentException("srcImageFile is null or not exist");
         }
@@ -51,7 +53,7 @@ public final class ImageUtil {
         try {
             inputStream = new FileInputStream(srcImageFile);
             outputStream = new FileOutputStream(destImageFile);
-            mergeResource(inputStream, destType, outputStream, newHeight, newWidth, mergeable, mergeables);
+            mergeResource(bufferedImageType, inputStream, destType, outputStream, newHeight, newWidth, mergeable, mergeables);
         } catch (IOException e) {
             LOG.error("method:mergeResource,srcImageFile:" + (null != srcImageFile ? srcImageFile.getAbsolutePath() : null)
                     + ",destImageFile:" + (null != destImageFile ? destImageFile.getAbsolutePath() : null)
@@ -69,14 +71,14 @@ public final class ImageUtil {
     /**
      * 合并图像(被合并的资源可以是图片或文字)
      */
-    public static void mergeResource(InputStream inputStream, ImageType destType, OutputStream outputStream, Mergeable mergeable, Mergeable... mergeables) {
-        mergeResource(inputStream, destType, outputStream, 0, 0, mergeable, mergeables);
+    public static void mergeResource(int bufferedImageType, InputStream inputStream, ImageType destType, OutputStream outputStream, Mergeable mergeable, Mergeable... mergeables) {
+        mergeResource(bufferedImageType, inputStream, destType, outputStream, 0, 0, mergeable, mergeables);
     }
     
     /**
      * 合并图像(被合并的资源可以是图片或文字)
      */
-    public static void mergeResource(InputStream inputStream, ImageType destType, OutputStream outputStream, int newHeight, int newWidth, Mergeable mergeable, Mergeable... mergeables) {
+    public static void mergeResource(int bufferedImageType, InputStream inputStream, ImageType destType, OutputStream outputStream, int newHeight, int newWidth, Mergeable mergeable, Mergeable... mergeables) {
         if (null == inputStream) {
             throw new IllegalArgumentException("inputStream is null");
         }
@@ -102,18 +104,22 @@ public final class ImageUtil {
                 newHeight = srcImageHeight;
             }
             
-            BufferedImage distImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+            BufferedImage distImage = new BufferedImage(newWidth, newHeight, bufferedImageType);
             
             // 绘制新图
-            distImage.getGraphics().drawImage(srcImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH), 0, 0, null);
+            Graphics2D graphics2d = distImage.createGraphics();
+            graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            
+            graphics2d.drawImage(srcImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH), 0, 0, null);
             
             // 绘制待合并的资源(可以是图片或文字)
-            mergeable.draw(distImage);
+            mergeable.draw(graphics2d);
             
             // 绘制待合并的资源(可以是图片或文字)
             if (null != mergeables && mergeables.length > 0) {
                 for (Mergeable d : mergeables) {
-                    d.draw(distImage);
+                    d.draw(graphics2d);
                 }
             }
             
@@ -199,10 +205,13 @@ public final class ImageUtil {
                 }
             }
             
-            BufferedImage distImage = new BufferedImage(maxNewWidth, maxNewHeight, BufferedImage.TYPE_INT_RGB);
+            BufferedImage distImage = new BufferedImage(maxNewWidth, maxNewHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+            
+            Graphics2D graphics2d = distImage.createGraphics();
+            graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
             // 绘制新图
-            distImage.getGraphics().drawImage(srcImage.getScaledInstance(maxNewWidth, maxNewHeight, Image.SCALE_SMOOTH), 0, 0, null);
+            graphics2d.drawImage(srcImage.getScaledInstance(maxNewWidth, maxNewHeight, Image.SCALE_SMOOTH), 0, 0, null);
             
             // 输出到文件流
             ImageIO.write(distImage, destType.name(), outputStream);

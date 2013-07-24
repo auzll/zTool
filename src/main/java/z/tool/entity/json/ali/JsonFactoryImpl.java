@@ -26,8 +26,7 @@ public class JsonFactoryImpl implements JsonFactoryInterface {
     }
 
     public JsonArray parseArray(String text) {
-        // TODO Auto-generated method stub
-        return null;
+        return JsonArrayImpl.parseArray(text);
     }
 
 }

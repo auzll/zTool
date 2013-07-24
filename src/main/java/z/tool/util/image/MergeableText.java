@@ -5,8 +5,7 @@ package z.tool.util.image;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 import java.io.IOException;
 
 /**
@@ -28,17 +27,15 @@ public final class MergeableText implements Mergeable {
         this.y = y;
     }
 
-    public void draw(BufferedImage buffered) throws IOException {
-        Graphics graphics = buffered.getGraphics();
-
+    public void draw(Graphics2D graphics2d) throws IOException {
         if (null != font) {
-            graphics.setFont(font);
+            graphics2d.setFont(font);
         }
         if (null != color) {
-            graphics.setColor(color);
+            graphics2d.setColor(color);
         }
 
-        graphics.drawString(text, x, y);
+        graphics2d.drawString(text, x, y);
     }
 
     public static MergeableText of(String text, Font font, Color color, int x,
