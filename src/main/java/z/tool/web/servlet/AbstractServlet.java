@@ -266,7 +266,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void post(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void post(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doPost(req, resp);
     }
     
@@ -282,7 +282,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void get(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void get(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doGet(req, resp);
     }
     
@@ -298,7 +298,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void delete(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void delete(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doDelete(req, resp);
     }
     
@@ -314,7 +314,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void head(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void head(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doHead(req, resp);
     }
 
@@ -330,7 +330,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void options(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void options(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doOptions(req, resp);
     }
 
@@ -346,7 +346,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void put(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void put(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doPut(req, resp);
     }
     
@@ -362,7 +362,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
-    void trace(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void trace(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         super.doTrace(req, resp);
     }
 }
