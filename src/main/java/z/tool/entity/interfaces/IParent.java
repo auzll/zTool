@@ -35,4 +35,6 @@ public interface IParent<E> {
     long getParentId();
     
     List<? extends IParent<E>> getChildren();
+    
+    void clearChildren();
 }

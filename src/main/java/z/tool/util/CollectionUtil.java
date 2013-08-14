@@ -104,13 +104,14 @@ public final class CollectionUtil {
         // tree map
         Map<Long, IParent<E>> tMap = Maps.newTreeMap();
         for (IParent<E> a : sourceList) {
+            a.clearChildren();
             tMap.put(a.getId(), a);
         }
         
         for (IParent<E> r : tMap.values()) {
             @SuppressWarnings("unchecked")
             E e = (E) r; 
-            if (r.getParentId() > 0) {
+            if (r.getParentId() > 0 && null != tMap.get(r.getParentId())) {
                 tMap.get(r.getParentId()).addChild(e);
             } else {
                 treeList.add(e);
