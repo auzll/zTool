@@ -48,9 +48,26 @@ public final class JsonUtil {
     }
     
     public static String makeObjectResult(boolean success, JsonObject item) {
+        return makeObjectResultWithTree(success, item, null, false);
+    }
+    
+    public static String makeObjectResultWithTree(boolean success, JsonObject item, 
+            List<? extends ExtJsJsonable> treeData, boolean needTreeHeader) {
         JsonObject jsonObj = Jsons.newJsonObject();
         jsonObj.put("success", success);
         jsonObj.put("item", item);
+        
+        if (null != treeData) {
+            JsonArray treeDataArray = Jsons.newJsonArray();
+            if (needTreeHeader) {
+                treeDataArray.add(EXTJS_TREE_ALL);
+            }
+            for (ExtJsJsonable j : treeData) {
+                treeDataArray.add(j.toExtjsTreeJson());
+            }
+            jsonObj.put("tree", treeDataArray);
+        }
+        
         return jsonObj.toString();
     }
     
@@ -64,6 +81,11 @@ public final class JsonUtil {
     }
     
     public static String makeArrayResult(int totalCount, List<? extends Jsonable<?>> array) {
+        return makeArrayResultWithTree(totalCount, array, null, false);
+    }
+    
+    public static String makeArrayResultWithTree(int totalCount, List<? extends Jsonable<?>> array, 
+            List<? extends ExtJsJsonable> treeData, boolean needTreeHeader) {
         JsonObject jsonObj = Jsons.newJsonObject();
         jsonObj.put("success", true);
         jsonObj.put("totalCount", totalCount);
@@ -74,6 +96,17 @@ public final class JsonUtil {
                 wrappedList.add(j.toJson());
             }
             jsonObj.put("items", wrappedList);
+        }
+        
+        if (null != treeData) {
+            JsonArray treeDataArray = Jsons.newJsonArray();
+            if (needTreeHeader) {
+                treeDataArray.add(EXTJS_TREE_ALL);
+            }
+            for (ExtJsJsonable j : treeData) {
+                treeDataArray.add(j.toExtjsTreeJson());
+            }
+            jsonObj.put("tree", treeDataArray);
         }
         
         return jsonObj.toString();
